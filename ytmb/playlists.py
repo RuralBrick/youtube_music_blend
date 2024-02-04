@@ -1,6 +1,7 @@
-
+import logging
 
 
 
 def dummy_playlist():
-    return ['ook']
+    logging.info('you say something?')
+    return ['ook', 'book', 'dook']
