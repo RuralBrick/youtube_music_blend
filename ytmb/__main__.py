@@ -1,9 +1,14 @@
-import argparse
+import sys
 import logging
+import argparse
 from pathlib import Path
 
-import ytmb.authentication
+from ytmb.ui import Menu, Action
+from ytmb.menus.users import users_menu
 
+
+def clean_exit():
+    sys.exit()
 
 def main():
     parser = argparse.ArgumentParser()
@@ -32,10 +37,18 @@ def main():
         ],
     )
 
-    print("Welcome to YouTube Music Blend!")
-    print(f"You ran this script with {args=}")
+    welcome = "Welcome to YouTube Music Blend!"
+    print(welcome)
+    print("=" * len(welcome))
 
-    ytmb.authentication.create_headers()
+    menu = Menu({
+        '1': Action(users_menu, "User Management"),
+
+        '0': Action(clean_exit, "Quit Script"),
+    })
+
+    while True:
+        menu.user_execute()
 
 if __name__ == '__main__':
     main()
