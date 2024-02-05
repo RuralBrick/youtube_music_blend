@@ -26,4 +26,4 @@ def get_data_path() -> Path:
     return Path(get_config()['data_path'])
 
 def is_ok_filename(name) -> bool:
-    
+    return bool(re.fullmatch(f'[A-Za-z0-9_\-]+', name))
