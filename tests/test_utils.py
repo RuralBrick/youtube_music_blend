@@ -1,13 +1,26 @@
+from unittest import TestCase
+
 from ytmb.utils import *
 
 
-def main():
-    print(f"{is_ok_filename('abcdefg1234')=}")
-    print(f"{is_ok_filename('Some_Test_Name-Version2')=}")
-    print(f"{not is_ok_filename('#BadNames')=}")
-    print(f"{not is_ok_filename('dots.dots.dots')=}")
-    print(f"{not is_ok_filename('we/love/directories')=}")
-    print(f"{not is_ok_filename('')=}")
+class TestFilename(TestCase):
+    def test_lower_and_num(self):
+        self.assertTrue(is_ok_filename('abcdefg1234'))
 
-if __name__ == '__main__':
-    main()
+    def test_all_char(self):
+        self.assertTrue(is_ok_filename('Some_Test_Name-Version2'))
+
+    def test_hashtag(self):
+        self.assertFalse(is_ok_filename('#BadNames'))
+
+    def test_dot(self):
+        self.assertFalse(is_ok_filename('dots.dots.dots'))
+
+    def test_slash(self):
+        self.assertFalse(is_ok_filename('we/love/directories'))
+
+    def test_empty(self):
+        self.assertFalse(is_ok_filename(''))
+
+    def test_backslash(self):
+        self.assertFalse(is_ok_filename(r'c\windows\perhaps'))

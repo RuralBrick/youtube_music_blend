@@ -1,6 +1,5 @@
 import logging
 from typing import TypedDict
-import __main__
 from pathlib import Path
 import re
 
@@ -15,15 +14,15 @@ class Config(TypedDict):
     authentication: AuthenticationConfig
 
 def get_config() -> Config:
-    p_main = Path(__main__.__file__)
-    p_config = p_main.parent / 'config.yml'
+    p_root = Path(__file__).parent
+    p_config = p_root / 'config.yml'
     with open(p_config) as f:
         dict_config = yaml.safe_load(f)
-    dict_config['data_path'] = __main__.__file__
+    dict_config['data_path'] = str(p_root)
     return dict_config
 
 def get_data_path() -> Path:
     return Path(get_config()['data_path'])
 
 def is_ok_filename(name) -> bool:
-    return bool(re.fullmatch(f'[A-Za-z0-9_\-]+', name))
+    return bool(re.fullmatch(r'[A-Za-z0-9_\-]+', name))
