@@ -2,9 +2,6 @@ import argparse
 import logging
 from pathlib import Path
 
-from ytmb.playlists import dummy_playlist
-
-
 
 def main():
     parser = argparse.ArgumentParser()
@@ -33,15 +30,8 @@ def main():
         ],
     )
 
-    logging.info('log says hi')
-    logging.debug('secrets lie here')
-    logging.error('uh, plz react')
-
-    print("Hi from __main__.py")
-    print(dummy_playlist())
-    print(args.log)
-    print(__file__)
-
+    print("Welcome to YouTube Music Blend!")
+    print(f"You ran this script with {args=}")
 
 if __name__ == '__main__':
     main()
