@@ -8,7 +8,10 @@
             "name": "Python Debugger: Module",
             "type": "debugpy",
             "request": "launch",
-            "module": "ytmb"
+            "module": "ytmb",
+            "args": [
+                "--verbose",
+            ]
         }
     ]
 }

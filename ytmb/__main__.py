@@ -2,6 +2,8 @@ import argparse
 import logging
 from pathlib import Path
 
+import ytmb.authentication
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -32,6 +34,8 @@ def main():
 
     print("Welcome to YouTube Music Blend!")
     print(f"You ran this script with {args=}")
+
+    ytmb.authentication.create_headers()
 
 if __name__ == '__main__':
     main()
