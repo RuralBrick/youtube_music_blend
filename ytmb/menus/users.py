@@ -3,10 +3,6 @@ import ytmb.utils as utils
 import ytmb.authentication as auth
 
 
-def signal_exit():
-    """raises StopIteration"""
-    raise StopIteration()
-
 def sign_in():
     prompt = "Name the user: "
     while True:
@@ -32,11 +28,5 @@ def users_menu():
     menu = Menu({
         '1': Action(sign_in, "Sign in new user"),
 
-        '0': Action(signal_exit, "Return to previous menu"),
     })
-
-    try:
-        while True:
-            menu.user_execute()
-    except StopIteration:
-        return
+    menu.user_execute()
