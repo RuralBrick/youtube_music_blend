@@ -53,9 +53,6 @@ class Menu:
         self._current_page = 0
         self.__actions = actions
 
-    def __str__(self) -> str:
-        return '\n'.join(f'{k}: {a.desc}' for k, a in self._actions.items())
-
     def __contains__(self, action_key) -> bool:
         return action_key in self.__actions
 
@@ -77,8 +74,7 @@ class Menu:
             )
         self.__actions[key] = action
 
-    @property
-    def _actions(self):
+    def _get_current_actions(self) -> dict:
         prev_action = (
             {self._prev_key: Action(self._go_prev, "Previous page")}
             if not self._at_first_page()
@@ -92,13 +88,14 @@ class Menu:
         return_action = {
             self._return_key: Action(self._return_menu, self._return_desc)
         }
-        return prev_action | self._actions_page() | next_action | return_action
+        return (
+            prev_action |
+            self._get_actions_page() |
+            next_action |
+            return_action
+        )
 
-    def _return_menu(self):
-        """raises StopIteration"""
-        raise StopIteration()
-
-    def _actions_page(self):
+    def _get_actions_page(self):
         page_size = get_config()['ui']['menu_limit']
         current_page_first_index = self._current_page * page_size
         return {
@@ -129,14 +126,24 @@ class Menu:
             raise ValueError("Page cannot be incremented further")
         self._current_page += 1
 
+    def _return_menu(self):
+        """raises StopIteration"""
+        raise StopIteration()
+
+    def get_current_actions(self) -> str:
+        return '\n'.join(
+            f'{k}: {a.desc}' for k, a in self._get_current_actions().items()
+        )
+
     def execute(self, key, *args: Any, **kwds: Any) -> Any:
-        return self._actions[key](*args, **kwds)
+        return self._get_current_actions()[key](*args, **kwds)
 
     def user_execute(self) -> Any:
         try:
             while True:
-                prompt = f"{self}\n{self._prompt}"
-                while (user_key := input(prompt)) not in self._actions:
+                prompt = f"{self.get_current_actions()}\n{self._prompt}"
+                current_actions = self._get_current_actions()
+                while (user_key := input(prompt)) not in current_actions:
                     print(self._redo)
                 self.execute(user_key)
         except StopIteration:

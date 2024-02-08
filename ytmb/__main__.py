@@ -7,9 +7,6 @@ from ytmb.ui import Menu, Action
 from ytmb.menus.users import users_menu
 
 
-def clean_exit():
-    sys.exit()
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(

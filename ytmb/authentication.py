@@ -16,7 +16,7 @@ def name_to_path(name) -> Path:
     return get_headers_path() / f'{name}.json'
 
 def is_existing_header(name) -> bool:
-    return name_to_path(name)
+    return name_to_path(name).is_file()
 
 def create_headers(name):
     """raises ValueError"""
