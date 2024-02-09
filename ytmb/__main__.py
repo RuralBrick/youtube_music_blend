@@ -5,6 +5,7 @@ from pathlib import Path
 
 from ytmb.ui import Menu, Action
 from ytmb.menus.users import users_menu
+from ytmb.menus.mixtape import mixtape_flow
 
 
 def main():
@@ -42,6 +43,8 @@ def main():
         {
             '1': Action(users_menu, "User Management"),
 
+            '3': Action(mixtape_flow, "Create Mixtape"),
+            
         },
         return_key='q',
         return_desc="Quit script",
@@ -50,6 +53,8 @@ def main():
         menu.user_execute()
     except KeyboardInterrupt:
         print("See you soon!")
+    except BaseException as e:
+        logging.critical(f"ytmb crashed:\n{e}")
 
 if __name__ == '__main__':
     main()

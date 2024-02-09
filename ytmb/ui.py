@@ -24,13 +24,14 @@ class Menu:
             actions={},
             *,
             prompt="What would you like to do? ",
+            redo="Please choose an action by its key.",
             prev_key='p',
             next_key='n',
             return_key='r',
             return_desc="Return to previous menu",
     ) -> None:
         self._prompt = prompt
-        self._redo = "Please choose an action by its key."
+        self._redo = redo
         self._prev_key = prev_key
         self._next_key = next_key
         self._return_key = return_key
@@ -136,15 +137,32 @@ class Menu:
         )
 
     def execute(self, key, *args: Any, **kwds: Any) -> Any:
-        return self._get_current_actions()[key](*args, **kwds)
-
-    def user_execute(self) -> Any:
         try:
-            while True:
-                prompt = f"{self.current_actions_to_string()}\n{self._prompt}"
-                current_actions = self._get_current_actions()
-                while (user_key := input(prompt)) not in current_actions:
-                    print(self._redo)
+            action = self._get_current_actions()[key]
+        except KeyError:
+            raise KeyError(f"Key \"{key}\" not on current page")
+        return action(*args, **kwds)
+
+    def user_execute(self) -> None:
+        while True:
+            prompt = f"{self.current_actions_to_string()}\n{self._prompt}"
+            current_actions = self._get_current_actions()
+            while (user_key := input(prompt)) not in current_actions:
+                print(self._redo)
+            try:
                 self.execute(user_key)
-        except StopIteration:
-            pass
+            except StopIteration:
+                return
+            except Exception as e:
+                logging.error(f"Could not complete action:\n{e}")
+
+    def user_choose(self) -> Any:
+        prompt = f"{self.current_actions_to_string()}\n{self._prompt}"
+        current_actions = self._get_current_actions()
+        while (user_key := input(prompt)) not in current_actions:
+            print(self._redo)
+        try:
+            return self.execute(user_key)
+        except Exception as e:
+            logging.error(f"Could not complete action:\n{e}")
+            return None
