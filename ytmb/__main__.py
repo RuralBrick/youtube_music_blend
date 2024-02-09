@@ -46,7 +46,10 @@ def main():
         return_key='q',
         return_desc="Quit script",
     )
-    menu.user_execute()
+    try:
+        menu.user_execute()
+    except KeyboardInterrupt:
+        print("See you soon!")
 
 if __name__ == '__main__':
     main()
