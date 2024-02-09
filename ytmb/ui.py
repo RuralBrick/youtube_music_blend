@@ -74,38 +74,6 @@ class Menu:
             )
         self.__actions[key] = action
 
-    def _get_current_actions(self) -> dict:
-        prev_action = (
-            {self._prev_key: Action(self._go_prev, "Previous page")}
-            if not self._at_first_page()
-            else {}
-        )
-        next_action = (
-            {self._next_key: Action(self._go_next, "Next page")}
-            if not self._at_last_page()
-            else {}
-        )
-        return_action = {
-            self._return_key: Action(self._return_menu, self._return_desc)
-        }
-        return (
-            prev_action |
-            self._get_actions_page() |
-            next_action |
-            return_action
-        )
-
-    def _get_actions_page(self):
-        page_size = get_config()['ui']['menu_limit']
-        current_page_first_index = self._current_page * page_size
-        return {
-            key: action for key, action in islice(
-                self.__actions.items(),
-                current_page_first_index,
-                current_page_first_index + page_size
-            )
-        }
-
     def _at_first_page(self):
         return self._current_page <= 0
 
@@ -130,7 +98,39 @@ class Menu:
         """raises StopIteration"""
         raise StopIteration()
 
-    def get_current_actions(self) -> str:
+    def _get_actions_page(self):
+        page_size = get_config()['ui']['menu_limit']
+        current_page_first_index = self._current_page * page_size
+        return {
+            key: action for key, action in islice(
+                self.__actions.items(),
+                current_page_first_index,
+                current_page_first_index + page_size
+            )
+        }
+
+    def _get_current_actions(self) -> dict:
+        prev_action = (
+            {self._prev_key: Action(self._go_prev, "Previous page")}
+            if not self._at_first_page()
+            else {}
+        )
+        next_action = (
+            {self._next_key: Action(self._go_next, "Next page")}
+            if not self._at_last_page()
+            else {}
+        )
+        return_action = {
+            self._return_key: Action(self._return_menu, self._return_desc)
+        }
+        return (
+            prev_action |
+            self._get_actions_page() |
+            next_action |
+            return_action
+        )
+
+    def current_actions_to_string(self) -> str:
         return '\n'.join(
             f'{k}: {a.desc}' for k, a in self._get_current_actions().items()
         )
@@ -141,7 +141,7 @@ class Menu:
     def user_execute(self) -> Any:
         try:
             while True:
-                prompt = f"{self.get_current_actions()}\n{self._prompt}"
+                prompt = f"{self.current_actions_to_string()}\n{self._prompt}"
                 current_actions = self._get_current_actions()
                 while (user_key := input(prompt)) not in current_actions:
                     print(self._redo)
