@@ -1,2 +1,4 @@
+ui:
+  menu_limit: 5
 authentication:
   header_path: headers

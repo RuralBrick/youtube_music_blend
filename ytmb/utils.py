@@ -6,11 +6,15 @@ import re
 import yaml
 
 
+class UiConfig(TypedDict):
+    menu_limit: int
+
 class AuthenticationConfig(TypedDict):
     header_path: str
 
 class Config(TypedDict):
     data_path: str
+    ui: UiConfig
     authentication: AuthenticationConfig
 
 def get_config() -> Config:

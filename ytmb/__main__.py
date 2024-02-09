@@ -7,9 +7,6 @@ from ytmb.ui import Menu, Action
 from ytmb.menus.users import users_menu
 
 
-def clean_exit():
-    sys.exit()
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -41,14 +38,15 @@ def main():
     print(welcome)
     print("=" * len(welcome))
 
-    menu = Menu({
-        '1': Action(users_menu, "User Management"),
+    menu = Menu(
+        {
+            '1': Action(users_menu, "User Management"),
 
-        '0': Action(clean_exit, "Quit Script"),
-    })
-
-    while True:
-        menu.user_execute()
+        },
+        return_key='q',
+        return_desc="Quit script",
+    )
+    menu.user_execute()
 
 if __name__ == '__main__':
     main()
