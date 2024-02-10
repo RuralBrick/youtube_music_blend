@@ -43,7 +43,7 @@ def get_tracks(name, playlist) -> list[Track]:
 def add_tracks(name, playlist, tracks):
     videoIds = [t['videoId'] for t in tracks]
     logging.debug(f"{videoIds=}")
-    (
+    resp = (
         auth.get_client(name)
             .add_playlist_items(
                 playlist['playlistId'],
@@ -51,11 +51,13 @@ def add_tracks(name, playlist, tracks):
                 duplicates=True,
             )
     )
+    logging.debug(f"{resp=}")
 
 def remove_tracks(name, playlist, tracks):
     if tracks:
-        (auth.get_client(name)
-             .remove_playlist_items(playlist['playlistId'], tracks))
+        resp = (auth.get_client(name)
+                    .remove_playlist_items(playlist['playlistId'], tracks))
+        logging.debug(f"{resp=}")
 
 def clear_playlist(name, playlist):
     tracks = get_tracks(name, playlist)
@@ -69,7 +71,14 @@ def combine_playlists(
         sample_method: SampleMethod=SampleMethod.IN_ORDER,
         combination_method: CombinationMethod=CombinationMethod.CONCATENATED,
 ):
+    logging.info("Getting tracks")
     tracks = [get_tracks(name, p) for p in source_playlists]
+    logging.debug(
+        ", ".join(
+            f"{p['title']} -- {len(t)} tracks"
+            for p, t in zip(source_playlists, tracks)
+        )
+    )
     match sample_size:
         case SampleLimit.ALL:
             limit = None
@@ -96,5 +105,8 @@ def combine_playlists(
         case CombinationMethod.SHUFFLED:
             combined_tracks = list(chain.from_iterable(sampled_tracks))
             random.shuffle(combined_tracks)
+    logging.info("Clearing target playlist")
     clear_playlist(name, target_playlist)
+    logging.info("Adding tracks to target playlist")
+    logging.debug(f"{len(combined_tracks)=}")
     add_tracks(name, target_playlist, combined_tracks)
