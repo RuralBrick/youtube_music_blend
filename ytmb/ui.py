@@ -4,6 +4,8 @@ from typing import Any
 from itertools import islice
 
 from ytmb.utils import get_config
+import ytmb.authentication as auth
+from ytmb.playlists import get_playlists
 
 
 class Action:
@@ -12,7 +14,10 @@ class Action:
         self.__desc = desc
 
     def __call__(self, *args: Any, **kwds: Any) -> Any:
-        return self.__callable(*args, **kwds)
+        if callable(self.__callable):
+            return self.__callable(*args, **kwds)
+        else:
+            return self.__callable
 
     @property
     def desc(self):
@@ -166,3 +171,24 @@ class Menu:
         except Exception as e:
             logging.error(f"Could not complete action:\n{e}")
             return None
+
+def create_name_menu() -> Menu:
+    names = auth.get_header_names()
+    name_menu = Menu(
+        {str(i+1): n for i, n in enumerate(names)},
+        prompt="Choose a name: ",
+        redo="Please choose a name by its number.",
+    )
+    return name_menu
+
+def create_playlist_menu(name) -> Menu:
+    playlists = get_playlists(name)
+    playlist_menu = Menu(
+        {
+            str(i+1): f"{p['title']} ({p['count']} tracks)"
+            for i, p in enumerate(playlists)
+        },
+        prompt="Choose a playlist: ",
+        redo="Please choose a playlist by its number.",
+    )
+    return playlist_menu

@@ -52,7 +52,7 @@ def main():
     try:
         menu.user_execute()
     except KeyboardInterrupt:
-        print("See you soon!")
+        print("\nSee you soon!")
     except BaseException as e:
         logging.critical(f"ytmb crashed:\n{e}")
 

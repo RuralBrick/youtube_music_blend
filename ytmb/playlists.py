@@ -2,6 +2,7 @@ import logging
 from typing import TypedDict, Any
 from enum import Enum, auto
 import random
+from itertools import zip_longest, chain
 
 import ytmb.authentication as auth
 
@@ -73,3 +74,13 @@ def combine_playlists(
             )
         case SampleMethod.IN_ORDER:
             sampled_tracks = (t[:limit] for t in tracks)
+    match combination_method:
+        case CombinationMethod.INTERLEAVED:
+            combined_tracks = (t for t in zip_longest(*sampled_tracks) if t)
+        case CombinationMethod.CONCATENATED:
+            combined_tracks = chain.from_iterable(sampled_tracks)
+        case CombinationMethod.SHUFFLED:
+            combined_tracks = list(chain.from_iterable(sampled_tracks))
+            random.shuffle(combined_tracks)
+    clear_playlist(name, target_playlist)
+    add_tracks(name, target_playlist, combined_tracks)
