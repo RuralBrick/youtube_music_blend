@@ -42,7 +42,15 @@ def get_tracks(name, playlist) -> list[Track]:
 
 def add_tracks(name, playlist, tracks):
     videoIds = [t['videoId'] for t in tracks]
-    auth.get_client(name).add_playlist_items(playlist['playlistId'], videoIds)
+    logging.debug(f"{videoIds=}")
+    (
+        auth.get_client(name)
+            .add_playlist_items(
+                playlist['playlistId'],
+                videoIds=videoIds,
+                duplicates=True,
+            )
+    )
 
 def remove_tracks(name, playlist, tracks):
     if tracks:
