@@ -1,9 +1,8 @@
-import sys
 import logging
 import argparse
 from pathlib import Path
 
-from ytmb.ui import Menu, Action
+from ytmb.ui import Actor, Action
 from ytmb.menus.users import users_menu
 from ytmb.menus.mixtape import mixtape_flow
 
@@ -39,18 +38,18 @@ def main():
     print(welcome)
     print("=" * len(welcome))
 
-    menu = Menu(
+    actor = Actor(
         {
             '1': Action(users_menu, "User Management"),
 
             '3': Action(mixtape_flow, "Create Mixtape"),
-            
+
         },
         return_key='q',
         return_desc="Quit script",
     )
     try:
-        menu.user_execute()
+        actor.user_execute()
     except KeyboardInterrupt:
         print("\nSee you soon!")
     except BaseException as e:

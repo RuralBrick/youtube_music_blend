@@ -1,5 +1,5 @@
 import logging
-from typing import TypedDict, Any
+from typing import TypedDict, NotRequired, Any
 from enum import Enum, auto
 import random
 from itertools import zip_longest, chain
@@ -11,7 +11,9 @@ class Playlist(TypedDict):
     playlistId: str
     title: str
     thumbnails: list
-    count: int
+    description: str
+    count: NotRequired[int]
+    author: NotRequired[list]
 
 type Track = Any
 
@@ -59,7 +61,7 @@ def combine_playlists(
         sample_method: SampleMethod=SampleMethod.IN_ORDER,
         combination_method: CombinationMethod=CombinationMethod.CONCATENATED,
 ):
-    tracks = (get_tracks(p) for p in source_playlists)
+    tracks = [get_tracks(name, p) for p in source_playlists]
     match sample_size:
         case SampleLimit.ALL:
             limit = None
@@ -69,18 +71,23 @@ def combine_playlists(
             limit = sample_size
     match sample_method:
         case SampleMethod.RANDOM:
-            sampled_tracks = (
+            sampled_tracks = [
                 random.sample(t, min(limit, len(t))) for t in tracks
-            )
+            ]
         case SampleMethod.IN_ORDER:
-            sampled_tracks = (t[:limit] for t in tracks)
+            sampled_tracks = [t[:limit] for t in tracks]
     match combination_method:
         case CombinationMethod.INTERLEAVED:
-            combined_tracks = (t for t in zip_longest(*sampled_tracks) if t)
+            combined_tracks = [
+                t
+                for t in chain.from_iterable(zip_longest(*sampled_tracks))
+                if t
+            ]
         case CombinationMethod.CONCATENATED:
-            combined_tracks = chain.from_iterable(sampled_tracks)
+            combined_tracks = list(chain.from_iterable(sampled_tracks))
         case CombinationMethod.SHUFFLED:
             combined_tracks = list(chain.from_iterable(sampled_tracks))
             random.shuffle(combined_tracks)
     clear_playlist(name, target_playlist)
+    logging.debug(f"{combined_tracks=}")
     add_tracks(name, target_playlist, combined_tracks)

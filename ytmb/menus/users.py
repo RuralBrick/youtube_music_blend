@@ -1,4 +1,4 @@
-from ytmb.ui import Menu, Action
+from ytmb.ui import Actor, Action
 import ytmb.utils as utils
 import ytmb.authentication as auth
 
@@ -25,8 +25,8 @@ def sign_in():
     print(f"User {username} successfully signed in.")
 
 def users_menu():
-    menu = Menu({
+    actor = Actor({
         '1': Action(sign_in, "Sign in new user"),
 
     })
-    menu.user_execute()
+    actor.user_execute()
