@@ -29,4 +29,4 @@ def get_header_names() -> list:
     return [p.stem for p in get_headers_path().iterdir()]
 
 def get_client(name) -> YTMusic:
-    return YTMusic(name_to_path(name))
+    return YTMusic(str(name_to_path(name).resolve()))

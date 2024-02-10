@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "youtube_music_blend"
 version = "0.0.0"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 dependencies = [
     "ytmusicapi",
     "pyyaml",
