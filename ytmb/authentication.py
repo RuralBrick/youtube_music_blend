@@ -1,7 +1,9 @@
 import logging
 from pathlib import Path
+from functools import cache
 
 import ytmusicapi
+from ytmusicapi import YTMusic
 
 from ytmb.utils import is_ok_filename, get_data_path, get_config
 
@@ -23,3 +25,10 @@ def create_headers(name):
     if not is_ok_filename(name):
         raise ValueError("Bad name")
     ytmusicapi.setup_oauth(name_to_path(name))
+
+def get_header_names() -> list:
+    return [p.stem for p in get_headers_path().iterdir()]
+
+@cache
+def get_client(name) -> YTMusic:
+    return YTMusic(str(name_to_path(name).resolve()))
