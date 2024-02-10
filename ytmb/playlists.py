@@ -89,5 +89,4 @@ def combine_playlists(
             combined_tracks = list(chain.from_iterable(sampled_tracks))
             random.shuffle(combined_tracks)
     clear_playlist(name, target_playlist)
-    logging.debug(f"{combined_tracks=}")
     add_tracks(name, target_playlist, combined_tracks)
