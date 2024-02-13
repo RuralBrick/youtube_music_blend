@@ -105,8 +105,9 @@ def combine_playlists(
         case CombinationMethod.SHUFFLED:
             combined_tracks = list(chain.from_iterable(sampled_tracks))
             random.shuffle(combined_tracks)
-    logging.info("Clearing target playlist")
-    clear_playlist(name, target_playlist)
+    old_tracks = get_tracks(name, target_playlist)
     logging.info("Adding tracks to target playlist")
     logging.debug(f"{len(combined_tracks)=}")
     add_tracks(name, target_playlist, combined_tracks)
+    logging.info("Deleting old tracks")
+    remove_tracks(name, target_playlist, old_tracks)
