@@ -12,10 +12,19 @@ class UiConfig(TypedDict):
 class AuthenticationConfig(TypedDict):
     header_path: str
 
+class FilteringConfig(TypedDict):
+    blacklist_path: str
+    whitelist_path: str
+
+class BlendConfig(TypedDict):
+    default_length: int
+    filtering: FilteringConfig
+
 class Config(TypedDict):
     data_path: str
     ui: UiConfig
     authentication: AuthenticationConfig
+    blend: BlendConfig
 
 def get_config() -> Config:
     p_root = Path(__file__).parent

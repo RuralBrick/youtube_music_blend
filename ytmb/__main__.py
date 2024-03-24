@@ -4,6 +4,7 @@ from pathlib import Path
 
 from ytmb.ui import Actor, Action
 from ytmb.menus.users import users_menu
+from ytmb.menus.blend import blend_flow
 from ytmb.menus.mixtape import mixtape_flow
 
 
@@ -41,7 +42,7 @@ def main():
     actor = Actor(
         {
             '1': Action(users_menu, "User Management"),
-
+            '2': Action(blend_flow, "Create Blend"),
             '3': Action(mixtape_flow, "Create Mixtape"),
 
         },

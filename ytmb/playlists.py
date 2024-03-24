@@ -1,21 +1,29 @@
 import logging
-from typing import TypedDict, NotRequired, Any
+from typing import TypedDict, NotRequired, Optional
 from enum import Enum, auto
 import random
 from itertools import zip_longest, chain
 
 import ytmb.authentication as auth
+from ytmb.exploration import Playlist, Track
 
 
-class Playlist(TypedDict):
-    playlistId: str
+class PlaylistItem(TypedDict):
+    videoId: str
     title: str
+    artists: list
+    album: Optional[dict]
+    likeStats: Optional[str]
+    inLibrary: Optional[bool]
     thumbnails: list
-    description: str
-    count: NotRequired[int]
-    author: NotRequired[list]
-
-type Track = Any
+    isAvailable: bool
+    isExplicit: bool
+    videoType: str
+    views: Optional[str]
+    duration: NotRequired[str]
+    duration_seconds: NotRequired[int]
+    setVideoId: str
+    feedbackTokens: NotRequired[dict]
 
 class SampleLimit(Enum):
     ALL = auto()
@@ -35,7 +43,7 @@ class CombinationMethod(Enum):
 def get_playlists(name) -> list[Playlist]:
     return auth.get_client(name).get_library_playlists(limit=None)
 
-def get_tracks(name, playlist) -> list[Track]:
+def get_tracks(name, playlist) -> list[PlaylistItem]:
     return (auth.get_client(name)
                 .get_playlist(playlist['playlistId'], limit=None)
                 .get('tracks', []))
