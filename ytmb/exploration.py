@@ -64,7 +64,7 @@ def create_blend(name, source_names, target_playlist):
     ]
     all_tracks = pl.combine_tracks(
         tracks,
-        pl.SampleSize.ALL,
+        pl.SampleLimit.ALL,
         pl.SampleMethod.IN_ORDER,
         pl.CombinationMethod.INTERLEAVED,
     )
