@@ -1,4 +1,5 @@
 from ytmb.ui import create_name_selector, create_playlist_selector
+from ytmb.exploration import create_blend
 
 
 def blend_flow():
@@ -19,7 +20,5 @@ def blend_flow():
     playlist_selector = create_playlist_selector(name)
     target_playlist = playlist_selector.user_choose()
     print(f"Target playlist: {target_playlist['title']}")
-
-
-
+    create_blend(name, source_users, target_playlist)
     print("Done.")

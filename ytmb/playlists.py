@@ -1,5 +1,6 @@
 import logging
 from typing import TypedDict, NotRequired, Optional
+from collections.abc import Iterable
 from enum import Enum, auto
 import random
 from itertools import zip_longest, chain
@@ -8,14 +9,10 @@ import ytmb.authentication as auth
 from ytmb.exploration import Playlist, Track
 
 
-class PlaylistItem(TypedDict):
-    videoId: str
-    title: str
-    artists: list
+class PlaylistItem(Track):
     album: Optional[dict]
     likeStats: Optional[str]
     inLibrary: Optional[bool]
-    thumbnails: list
     isAvailable: bool
     isExplicit: bool
     videoType: str
@@ -90,22 +87,12 @@ def update_playlist(name, playlist, tracks):
     logging.debug(f"Adding {len(new_tracks)} new tracks")
     add_tracks(name, playlist, new_tracks)
 
-def combine_playlists(
-        name,
-        source_playlists,
-        target_playlist,
+def combine_tracks(
+        tracks: Iterable[Iterable[Track]],
         sample_size: SampleSize=SampleLimit.ALL,
         sample_method: SampleMethod=SampleMethod.IN_ORDER,
         combination_method: CombinationMethod=CombinationMethod.CONCATENATED,
-):
-    logging.info("Getting tracks")
-    tracks = [get_tracks(name, p) for p in source_playlists]
-    logging.debug(
-        ", ".join(
-            f"{p['title']} -- {len(t)} tracks"
-            for p, t in zip(source_playlists, tracks)
-        )
-    )
+) -> list[PlaylistItem]:
     match sample_size:
         case SampleLimit.ALL:
             limit = None
@@ -132,5 +119,29 @@ def combine_playlists(
         case CombinationMethod.SHUFFLED:
             combined_tracks = list(chain.from_iterable(sampled_tracks))
             random.shuffle(combined_tracks)
+    return combined_tracks
+
+def combine_playlists(
+        name,
+        source_playlists,
+        target_playlist,
+        sample_size: SampleSize=SampleLimit.ALL,
+        sample_method: SampleMethod=SampleMethod.IN_ORDER,
+        combination_method: CombinationMethod=CombinationMethod.CONCATENATED,
+):
+    logging.info("Getting tracks")
+    tracks = [get_tracks(name, p) for p in source_playlists]
+    logging.debug(
+        ", ".join(
+            f"{p['title']} -- {len(t)} tracks"
+            for p, t in zip(source_playlists, tracks)
+        )
+    )
+    combined_tracks = combine_tracks(
+        tracks,
+        sample_size,
+        sample_method,
+        combination_method,
+    )
     logging.info("Adding tracks to target playlist")
     overwrite_playlist(name, target_playlist, combined_tracks)
