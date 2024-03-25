@@ -71,6 +71,25 @@ def clear_playlist(name, playlist):
     tracks = get_tracks(name, playlist)
     remove_tracks(name, playlist, tracks)
 
+def overwrite_playlist(name, playlist, tracks):
+    old_tracks = get_tracks(name, playlist)
+    logging.debug(f"Found {len(old_tracks)} tracks")
+    logging.debug(f"Adding {len(tracks)} tracks")
+    add_tracks(name, playlist, tracks)
+    logging.debug(f"Removing old tracks")
+    remove_tracks(name, playlist, old_tracks)
+
+def tracks_difference(minuend, subtrahend):
+    subtrahend_videoId = {t['videoId'] for t in subtrahend}
+    return [t for t in minuend if t['videoId'] not in subtrahend_videoId]
+
+def update_playlist(name, playlist, tracks):
+    existing_tracks = get_tracks(name, playlist)
+    logging.debug(f"Found {len(existing_tracks)} tracks")
+    new_tracks = tracks_difference(tracks, existing_tracks)
+    logging.debug(f"Adding {len(new_tracks)} new tracks")
+    add_tracks(name, playlist, new_tracks)
+
 def combine_playlists(
         name,
         source_playlists,
@@ -113,9 +132,5 @@ def combine_playlists(
         case CombinationMethod.SHUFFLED:
             combined_tracks = list(chain.from_iterable(sampled_tracks))
             random.shuffle(combined_tracks)
-    old_tracks = get_tracks(name, target_playlist)
     logging.info("Adding tracks to target playlist")
-    logging.debug(f"{len(combined_tracks)=}")
-    add_tracks(name, target_playlist, combined_tracks)
-    logging.info("Deleting old tracks")
-    remove_tracks(name, target_playlist, old_tracks)
+    overwrite_playlist(name, target_playlist, combined_tracks)
