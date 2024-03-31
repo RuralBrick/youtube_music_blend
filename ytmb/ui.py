@@ -244,7 +244,7 @@ class Actor:
             except StopIteration:
                 return
             except Exception as e:
-                logging.error(f"Could not complete action:\n{e}")
+                logging.error(f"Could not complete action:\n{repr(e)}")
 
 def create_name_selector() -> Selector:
     names = auth.get_header_names()

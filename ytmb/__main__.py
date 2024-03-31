@@ -23,7 +23,10 @@ def main():
     verbosity_logs = logging.StreamHandler()
     verbosity_logs.setLevel(args.verbose)
 
-    debug_logs = logging.FileHandler(Path(__file__).parent / 'debug.log')
+    debug_logs = logging.FileHandler(
+        Path(__file__).parent / 'debug.log',
+        encoding='utf-8',
+    )
     debug_logs.setLevel(logging.DEBUG)
 
     logging.basicConfig(
@@ -54,7 +57,7 @@ def main():
     except KeyboardInterrupt:
         print("\nSee you soon!")
     except BaseException as e:
-        logging.critical(f"ytmb crashed:\n{e}")
+        logging.critical(f"ytmb crashed:\n{repr(e)}")
 
 if __name__ == '__main__':
     main()

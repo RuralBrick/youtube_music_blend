@@ -38,12 +38,20 @@ class CombinationMethod(Enum):
     SHUFFLED = auto()
 
 def get_playlists(name) -> list[Playlist]:
-    return auth.get_client(name).get_library_playlists(limit=None)
+    try:
+        return auth.get_client(name).get_library_playlists(limit=None)
+    except Exception as e:
+        logging.error(f"Could not get user playlists:\n{repr(e)}")
+        return []
 
 def get_tracks(name, playlist) -> list[PlaylistItem]:
-    return (auth.get_client(name)
-                .get_playlist(playlist['playlistId'], limit=None)
-                .get('tracks', []))
+    try:
+        return (auth.get_client(name)
+                    .get_playlist(playlist['playlistId'], limit=None)
+                    .get('tracks', []))
+    except Exception as e:
+        logging.error(f"Could not get playlist tracks:\n{repr(e)}")
+        return []
 
 def add_tracks(name, playlist, tracks):
     videoIds = [t['videoId'] for t in tracks]
@@ -92,7 +100,7 @@ def combine_tracks(
         sample_size: SampleSize=SampleLimit.ALL,
         sample_method: SampleMethod=SampleMethod.IN_ORDER,
         combination_method: CombinationMethod=CombinationMethod.CONCATENATED,
-) -> list[PlaylistItem]:
+) -> list[Track]:
     match sample_size:
         case SampleLimit.ALL:
             limit = None
