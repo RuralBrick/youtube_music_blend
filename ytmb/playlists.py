@@ -1,21 +1,26 @@
 import logging
-from typing import TypedDict, NotRequired, Any
+from typing import NotRequired, Optional
+from collections.abc import Iterable
 from enum import Enum, auto
 import random
 from itertools import zip_longest, chain
 
 import ytmb.authentication as auth
+from ytmb.exploration import Playlist, Track
 
 
-class Playlist(TypedDict):
-    playlistId: str
-    title: str
-    thumbnails: list
-    description: str
-    count: NotRequired[int]
-    author: NotRequired[list]
-
-type Track = Any
+class PlaylistItem(Track):
+    album: Optional[dict]
+    likeStats: Optional[str]
+    inLibrary: Optional[bool]
+    isAvailable: bool
+    isExplicit: bool
+    videoType: str
+    views: Optional[str]
+    duration: NotRequired[str]
+    duration_seconds: NotRequired[int]
+    setVideoId: str
+    feedbackTokens: NotRequired[dict]
 
 class SampleLimit(Enum):
     ALL = auto()
@@ -33,35 +38,69 @@ class CombinationMethod(Enum):
     SHUFFLED = auto()
 
 def get_playlists(name) -> list[Playlist]:
-    return auth.get_client(name).get_library_playlists(limit=None)
+    try:
+        return auth.get_client(name).get_library_playlists(limit=None)
+    except Exception as e:
+        logging.error(f"Could not get user playlists:\n{repr(e)}")
+        return []
 
-def get_tracks(name, playlist) -> list[Track]:
-    return (auth.get_client(name)
-                .get_playlist(playlist['playlistId'], limit=None)
-                .get('tracks', []))
+def get_tracks(name, playlist) -> list[PlaylistItem]:
+    try:
+        return (auth.get_client(name)
+                    .get_playlist(playlist['playlistId'], limit=None)
+                    .get('tracks', []))
+    except Exception as e:
+        logging.error(f"Could not get playlist tracks:\n{repr(e)}")
+        return []
 
 def add_tracks(name, playlist, tracks):
     videoIds = [t['videoId'] for t in tracks]
-    auth.get_client(name).add_playlist_items(playlist['playlistId'], videoIds)
+    logging.debug(f"{videoIds=}")
+    resp = (
+        auth.get_client(name)
+            .add_playlist_items(
+                playlist['playlistId'],
+                videoIds=videoIds,
+                duplicates=True,
+            )
+    )
+    logging.debug(f"{resp=}")
 
 def remove_tracks(name, playlist, tracks):
     if tracks:
-        (auth.get_client(name)
-             .remove_playlist_items(playlist['playlistId'], tracks))
+        resp = (auth.get_client(name)
+                    .remove_playlist_items(playlist['playlistId'], tracks))
+        logging.debug(f"{resp=}")
 
 def clear_playlist(name, playlist):
     tracks = get_tracks(name, playlist)
     remove_tracks(name, playlist, tracks)
 
-def combine_playlists(
-        name,
-        source_playlists,
-        target_playlist,
+def overwrite_playlist(name, playlist, tracks):
+    old_tracks = get_tracks(name, playlist)
+    logging.debug(f"Found {len(old_tracks)} tracks")
+    logging.debug(f"Adding {len(tracks)} tracks")
+    add_tracks(name, playlist, tracks)
+    logging.debug(f"Removing old tracks")
+    remove_tracks(name, playlist, old_tracks)
+
+def tracks_difference(minuend, subtrahend):
+    subtrahend_videoId = {t['videoId'] for t in subtrahend}
+    return [t for t in minuend if t['videoId'] not in subtrahend_videoId]
+
+def update_playlist(name, playlist, tracks):
+    existing_tracks = get_tracks(name, playlist)
+    logging.debug(f"Found {len(existing_tracks)} tracks")
+    new_tracks = tracks_difference(tracks, existing_tracks)
+    logging.debug(f"Adding {len(new_tracks)} new tracks")
+    add_tracks(name, playlist, new_tracks)
+
+def combine_tracks(
+        tracks: Iterable[Iterable[Track]],
         sample_size: SampleSize=SampleLimit.ALL,
         sample_method: SampleMethod=SampleMethod.IN_ORDER,
         combination_method: CombinationMethod=CombinationMethod.CONCATENATED,
-):
-    tracks = [get_tracks(name, p) for p in source_playlists]
+) -> list[Track]:
     match sample_size:
         case SampleLimit.ALL:
             limit = None
@@ -88,6 +127,29 @@ def combine_playlists(
         case CombinationMethod.SHUFFLED:
             combined_tracks = list(chain.from_iterable(sampled_tracks))
             random.shuffle(combined_tracks)
-    clear_playlist(name, target_playlist)
-    logging.debug(f"{combined_tracks=}")
-    add_tracks(name, target_playlist, combined_tracks)
+    return combined_tracks
+
+def combine_playlists(
+        name,
+        source_playlists,
+        target_playlist,
+        sample_size: SampleSize=SampleLimit.ALL,
+        sample_method: SampleMethod=SampleMethod.IN_ORDER,
+        combination_method: CombinationMethod=CombinationMethod.CONCATENATED,
+):
+    logging.info("Getting tracks")
+    tracks = [get_tracks(name, p) for p in source_playlists]
+    logging.debug(
+        ", ".join(
+            f"{p['title']} -- {len(t)} tracks"
+            for p, t in zip(source_playlists, tracks)
+        )
+    )
+    combined_tracks = combine_tracks(
+        tracks,
+        sample_size,
+        sample_method,
+        combination_method,
+    )
+    logging.info("Adding tracks to target playlist")
+    overwrite_playlist(name, target_playlist, combined_tracks)

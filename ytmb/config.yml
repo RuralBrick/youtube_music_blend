@@ -2,3 +2,8 @@ ui:
   menu_limit: 5
 authentication:
   header_path: headers
+blend:
+  default_length: 50
+  filtering:
+    blacklist_path: blacklists
+    whitelist_path: whitelists

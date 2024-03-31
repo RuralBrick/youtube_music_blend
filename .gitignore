@@ -1,5 +1,7 @@
 # ytmb
 ytmb/headers/*
+ytmb/blacklists/*
+ytmb/whitelists/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
