@@ -94,6 +94,9 @@ def update_playlist(name, playlist, tracks):
     new_tracks = tracks_difference(tracks, existing_tracks)
     logging.debug(f"Adding {len(new_tracks)} new tracks")
     add_tracks(name, playlist, new_tracks)
+    retired_tracks = tracks_difference(existing_tracks, tracks)
+    logging.debug(f"Removing {len(retired_tracks)} old tracks")
+    remove_tracks(name, playlist, retired_tracks)
 
 def combine_tracks(
         tracks: Iterable[Iterable[Track]],

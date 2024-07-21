@@ -6,6 +6,7 @@ from ytmb.ui import Actor, Action
 from ytmb.menus.users import users_menu
 from ytmb.menus.blend import blend_flow
 from ytmb.menus.mixtape import mixtape_flow
+from ytmb.menus.compilation import compilation_flow
 
 
 def main():
@@ -47,6 +48,7 @@ def main():
             '1': Action(users_menu, "User Management"),
             '2': Action(blend_flow, "Create Blend"),
             '3': Action(mixtape_flow, "Create Mixtape"),
+            '4': Action(compilation_flow, "Create Compilation"),
 
         },
         return_key='q',
