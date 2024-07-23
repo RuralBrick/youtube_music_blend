@@ -5,14 +5,11 @@ from functools import cache
 import ytmusicapi
 from ytmusicapi import YTMusic
 
-from ytmb.utils import is_ok_filename, get_data_path, get_config
+from ytmb.utils import is_ok_filename, get_data_directory, get_config
 
 
 def get_headers_path() -> Path:
-    p_headers = get_data_path() / get_config()['authentication']['header_path']
-    if not p_headers.is_dir():
-        p_headers.mkdir(parents=True)
-    return p_headers
+    return get_data_directory(get_config()['authentication']['header_path'])
 
 def name_to_path(name) -> Path:
     return get_headers_path() / f'{name}.json'

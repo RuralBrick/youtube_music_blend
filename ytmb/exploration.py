@@ -6,7 +6,7 @@ from functools import partial
 import random
 from itertools import repeat, zip_longest
 
-from ytmb.utils import get_config, get_data_path
+from ytmb.utils import get_config, get_data_directory
 import ytmb.authentication as auth
 import ytmb.playlists as pl
 
@@ -59,18 +59,14 @@ class HomeSection(TypedDict):
     contents: list[Listing]
 
 def get_whitelist_path() -> Path:
-    whitelist_path = get_config()['blend']['filtering']['whitelist_path']
-    p_whitelists = get_data_path() / whitelist_path
-    if not p_whitelists.is_dir():
-        p_whitelists.mkdir(parents=True)
-    return p_whitelists
+    return get_data_directory(
+        get_config()['blend']['filtering']['whitelist_path']
+    )
 
 def get_blacklist_path() -> Path:
-    blacklist_path = get_config()['blend']['filtering']['blacklist_path']
-    p_blacklists = get_data_path() / blacklist_path
-    if not p_blacklists.is_dir():
-        p_blacklists.mkdir(parents=True)
-    return p_blacklists
+    return get_data_directory(
+        get_config()['blend']['filtering']['blacklist_path']
+    )
 
 def get_whitelist(name) -> Optional[set]:
     p_whitelist = get_whitelist_path() / f'{name}.txt'

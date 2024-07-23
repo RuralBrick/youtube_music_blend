@@ -7,6 +7,7 @@ from ytmb.menus.users import users_menu
 from ytmb.menus.blend import blend_flow
 from ytmb.menus.mixtape import mixtape_flow
 from ytmb.menus.compilation import compilation_flow
+from ytmb.menus.tracking import tracking_flow
 
 
 def main():
@@ -50,6 +51,7 @@ def main():
             '3': Action(mixtape_flow, "Create Mixtape"),
             '4': Action(compilation_flow, "Create Compilation"),
 
+            't': Action(tracking_flow, "Track Playlist"),
         },
         return_key='q',
         return_desc="Quit script",

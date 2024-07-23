@@ -7,3 +7,5 @@ blend:
   filtering:
     blacklist_path: blacklists
     whitelist_path: whitelists
+tracking:
+  data_path: tracking

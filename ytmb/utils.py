@@ -37,5 +37,11 @@ def get_config() -> Config:
 def get_data_path() -> Path:
     return Path(get_config()['data_path'])
 
+def get_data_directory(name) -> Path:
+    p_dir = get_data_path() / name
+    if not p_dir.isdir():
+        p_dir.mkdir(parents=True)
+    return p_dir
+
 def is_ok_filename(name) -> bool:
     return bool(re.fullmatch(r'[A-Za-z0-9_\-]+', name))
