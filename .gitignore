@@ -2,6 +2,7 @@
 ytmb/headers/*
 ytmb/blacklists/*
 ytmb/whitelists/*
+ytmb/tracking/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
