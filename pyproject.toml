@@ -10,6 +10,19 @@ dependencies = [
     "ytmusicapi",
     "pyyaml",
 ]
+authors = [
+    {name = "RuralBrick"},
+]
+description = "Create and combine YouTube Music playlists in a variety of ways."
+readme = "README.md"
+license = {file = "LICENSE.txt"}
+keywords = ["YouTube", "YouTube Music", "music", "playlists"]
+classifiers = [
+    "Environment :: Console",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+]
 
 [project.scripts]
 ytmb = "ytmb.__main__:main"
