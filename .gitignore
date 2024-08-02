@@ -1,5 +1,5 @@
 # ytmb
-ytmb/data/*
+ytmb/data/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
