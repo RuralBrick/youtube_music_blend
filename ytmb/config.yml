@@ -8,4 +8,4 @@ blend:
     blacklist_path: blacklists
     whitelist_path: whitelists
 tracking:
-  data_path: tracking
+  audits_path: tracking

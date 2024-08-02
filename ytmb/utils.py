@@ -20,26 +20,31 @@ class BlendConfig(TypedDict):
     default_length: int
     filtering: FilteringConfig
 
+class TrackingConfig(TypedDict):
+    audits_path: str
+
 class Config(TypedDict):
     data_path: str
     ui: UiConfig
     authentication: AuthenticationConfig
     blend: BlendConfig
+    tracking: TrackingConfig
 
 def get_config() -> Config:
     p_root = Path(__file__).parent
     p_config = p_root / 'config.yml'
     with open(p_config) as f:
         dict_config = yaml.safe_load(f)
-    dict_config['data_path'] = str(p_root)
+    if 'data_path' not in dict_config:
+        dict_config['data_path'] = f'{p_root}/data'
     return dict_config
 
 def get_data_path() -> Path:
     return Path(get_config()['data_path'])
 
 def get_data_directory(name) -> Path:
-    p_dir = get_data_path() / name
-    if not p_dir.isdir():
+    p_dir: Path = get_data_path() / name
+    if not p_dir.is_dir():
         p_dir.mkdir(parents=True)
     return p_dir
 
