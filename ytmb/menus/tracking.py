@@ -1,4 +1,6 @@
 from pathlib import Path
+from datetime import date
+import codecs
 
 from ytmb.ui import create_name_selector, create_playlist_selector
 import ytmb.playlists as pl
@@ -16,6 +18,9 @@ def get_audits_directory(name: str, playlist: Playlist) -> Path:
     return p_audits
 
 def tracking_flow():
+    # HACK
+
+    # TODO: Make process more structured/automated
 
     name_selector = create_name_selector()
     name = name_selector.user_choose()
@@ -23,6 +28,12 @@ def tracking_flow():
     playlist_selector = create_playlist_selector(name)
     playlist = playlist_selector.user_choose()
 
-    get_audits_directory(name, playlist)
+    p_playlist_audits = get_audits_directory(name, playlist)
+    audit_name = date.today().strftime('%y-%m-%d.txt')
 
-    pl.get_tracks(playlist)
+    with codecs.open(p_playlist_audits / audit_name, 'w', 'utf-8') as f:
+        f.writelines(t['title'] + '\n' for t in pl.get_tracks(name, playlist))
+
+    # end HACK
+
+    print("Done.")
