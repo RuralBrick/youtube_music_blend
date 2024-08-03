@@ -1,5 +1,6 @@
 import logging
 import argparse
+from typing import NamedTuple
 from pathlib import Path
 
 from ytmb.ui import Actor, Action
@@ -10,35 +11,57 @@ from ytmb.menus.compilation import compilation_flow
 from ytmb.menus.tracking import tracking_flow
 
 
-def main():
+class ArgNamespace(NamedTuple):
+    verbose: int
+    log: Path
+
+def parse_args() -> ArgNamespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument(
+
+    verbosity = parser.add_mutually_exclusive_group()
+    verbosity.add_argument(
         '-v',
         '--verbose',
         action='store_const',
         const=logging.DEBUG,
         default=logging.INFO,
     )
-    parser.add_argument('--log', type=Path, default=Path('debug.log'))
-    args = parser.parse_args()
+    verbosity.add_argument(
+        '-q',
+        '--quiet',
+        dest='verbose',
+        action='store_const',
+        const=logging.WARNING,
+    )
 
+    parser.add_argument(
+        '--log',
+        type=Path,
+        default=Path(__file__).parent / 'debug.log'
+    )
+
+    return parser.parse_args()
+
+def config_logs(args: ArgNamespace):
     verbosity_logs = logging.StreamHandler()
     verbosity_logs.setLevel(args.verbose)
 
-    debug_logs = logging.FileHandler(
-        Path(__file__).parent / 'debug.log',
-        encoding='utf-8',
-    )
+    debug_logs = logging.FileHandler(args.log, encoding='utf-8')
     debug_logs.setLevel(logging.DEBUG)
 
+    fmt = '%(levelname)s: (%(module)s.%(funcName)s) [%(asctime)s] %(message)s'
     logging.basicConfig(
         level=logging.DEBUG,
-        format='%(levelname)s: (%(module)s.%(funcName)s) [%(asctime)s] %(message)s',
+        format=fmt,
         handlers=[
             verbosity_logs,
             debug_logs,
         ],
     )
+
+def main():
+    args = parse_args()
+    config_logs(args)
 
     welcome = "Welcome to YouTube Music Blend!"
     print(welcome)
