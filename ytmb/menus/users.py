@@ -1,4 +1,4 @@
-from ytmb.ui import Actor, Action
+from ytmb.ui import Actor, Action, create_name_selector
 from ytmb.utils import is_ok_filename
 import ytmb.authentication as auth
 
@@ -24,9 +24,18 @@ def sign_in():
     auth.create_headers(username)
     print(f"User {username} successfully signed in.")
 
+def sign_out():
+    if not auth.get_header_names():
+        print("No users currently signed in.")
+        return
+    name_selector = create_name_selector()
+    name = name_selector.user_choose()
+    auth.delete_headers(name)
+    print(f"User {name} successfully signed out.")
+
 def users_menu():
     actor = Actor({
         '1': Action(sign_in, "Sign in new user"),
-
+        '2': Action(sign_out, "Sign out user"),
     })
     actor.user_execute()

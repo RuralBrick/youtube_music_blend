@@ -23,6 +23,12 @@ def create_headers(name):
         raise ValueError("Bad name")
     ytmusicapi.setup_oauth(name_to_path(name))
 
+def delete_headers(name):
+    """raises ValueError"""
+    if not is_existing_header(name):
+        raise ValueError("Name not found")
+    name_to_path(name).unlink()
+
 def get_header_names() -> list:
     return [p.stem for p in get_headers_path().iterdir()]
 

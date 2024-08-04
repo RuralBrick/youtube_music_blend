@@ -1,8 +1,15 @@
+from typing import TypedDict
+
 from ytmb.ui import create_name_selector, create_playlist_selector
 import ytmb.playlists as pl
 
 
-def mixtape_flow():
+class MixtapeParameters(TypedDict):
+    name: str
+    source_playlists: list[str]
+    target_playlist: str
+
+def mixtape_args() -> MixtapeParameters:
     name_selector = create_name_selector()
     source_playlists = []
     print("Adding source playlists.")
@@ -22,12 +29,30 @@ def mixtape_flow():
     playlist_selector = create_playlist_selector(name)
     target_playlist = playlist_selector.user_choose()
     print(f"Target playlist: {target_playlist['title']}")
+
+    args: MixtapeParameters = {
+        'name': name,
+        'source_playlists': [
+            pl.serialize_playlist(p) for p in source_playlists
+        ],
+        'target_playlist': pl.serialize_playlist(target_playlist),
+    }
+    return args
+
+def process_mixtape(args: MixtapeParameters):
     pl.combine_playlists(
-        name,
-        source_playlists,
-        target_playlist,
+        args['name'],
+        [
+            pl.deserialize_playlist(args['name'], p)
+            for p in args['source_playlists']
+        ],
+        pl.deserialize_playlist(args['name'], args['target_playlist']),
         pl.SampleLimit.SHORTEST_PLAYLIST,
         pl.SampleMethod.RANDOM,
         pl.CombinationMethod.INTERLEAVED,
     )
+
+def mixtape_flow():
+    args = mixtape_args()
+    process_mixtape(args)
     print("Done.")

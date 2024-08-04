@@ -9,3 +9,5 @@ blend:
     whitelist_path: whitelists
 tracking:
   audits_path: tracking
+automation:
+  routines_path: routines.json

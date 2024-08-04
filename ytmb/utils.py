@@ -27,12 +27,16 @@ class BlendConfig(TypedDict):
 class TrackingConfig(TypedDict):
     audits_path: str
 
+class AutomationConfig(TypedDict):
+    routines_path: str
+
 class Config(TypedDict):
     data_path: str
     ui: UiConfig
     authentication: AuthenticationConfig
     blend: BlendConfig
     tracking: TrackingConfig
+    automation: AutomationConfig
 
 def get_config() -> Config:
     p_root = Path(__file__).parent

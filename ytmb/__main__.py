@@ -1,15 +1,18 @@
 import logging
+import sys
 import argparse
 from typing import NamedTuple, Optional
 from pathlib import Path
 
 from ytmb.utils import global_settings
+from ytmb.automation import get_routines, AUTOMATABLES
 from ytmb.ui import Actor, Action
 from ytmb.menus.users import users_menu
 from ytmb.menus.blend import blend_flow
 from ytmb.menus.mixtape import mixtape_flow
 from ytmb.menus.compilation import compilation_flow
 from ytmb.menus.tracking import tracking_flow
+from ytmb.menus.routines import routines_menu
 
 
 class ArgNamespace(NamedTuple):
@@ -66,11 +69,7 @@ def config_logs(args: ArgNamespace):
         ],
     )
 
-def main():
-    args = parse_args()
-    config_logs(args)
-    global_settings['debug'] = args.debug
-
+def interactive_mode():
     welcome = "Welcome to YouTube Music Blend!"
     print(welcome)
     print("=" * len(welcome))
@@ -81,8 +80,10 @@ def main():
             '2': Action(blend_flow, "Create Blend"),
             '3': Action(mixtape_flow, "Create Mixtape"),
             '4': Action(compilation_flow, "Create Compilation"),
-
+            # 'a': Action(, "Advanced Playlist Creation"),
             't': Action(tracking_flow, "Track Playlist"),
+            'r': Action(routines_menu, "Routines"),
+            # 's': Action(, "Settings"),
         },
         return_key='q',
         return_desc="Quit script",
@@ -96,5 +97,28 @@ def main():
             raise
         logging.critical(f"ytmb crashed:\n{repr(e)}")
 
+def main():
+    args = parse_args()
+    config_logs(args)
+    global_settings['debug'] = args.debug
+
+    if not args.routine:
+        interactive_mode()
+        return
+
+    routine = get_routines().get(args.routine, None)
+
+    if not routine:
+        print("Routine not found.")
+        return 1
+
+    automatable = AUTOMATABLES.get(routine['prog'], None)
+
+    if not automatable:
+        print("Program not found.")
+        return 1
+
+    automatable.program(routine['args'])
+
 if __name__ == '__main__':
-    main()
+    sys.exit(main())

@@ -1,8 +1,16 @@
+from typing import TypedDict
+
 from ytmb.ui import create_name_selector, create_playlist_selector
 from ytmb.exploration import create_blend
+import ytmb.playlists as pl
 
 
-def blend_flow():
+class BlendParameters(TypedDict):
+    name: str
+    source_users: list[str]
+    target_playlist: str
+
+def blend_args() -> BlendParameters:
     name_selector = create_name_selector()
     source_users = []
     print("Adding source users.")
@@ -20,5 +28,22 @@ def blend_flow():
     playlist_selector = create_playlist_selector(name)
     target_playlist = playlist_selector.user_choose()
     print(f"Target playlist: {target_playlist['title']}")
-    create_blend(name, source_users, target_playlist)
+
+    args: BlendParameters = {
+        'name': name,
+        'source_users': source_users,
+        'target_playlist': pl.serialize_playlist(target_playlist),
+    }
+    return args
+
+def process_blend(args: BlendParameters):
+    create_blend(
+        args['name'],
+        args['source_users'],
+        pl.deserialize_playlist(args['name'], args['target_playlist']),
+    )
+
+def blend_flow():
+    args = blend_args()
+    process_blend(args)
     print("Done.")
