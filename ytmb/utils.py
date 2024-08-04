@@ -6,6 +6,10 @@ import re
 import yaml
 
 
+global_settings = {
+    'debug': False,
+}
+
 class UiConfig(TypedDict):
     menu_limit: int
 

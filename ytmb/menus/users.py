@@ -1,5 +1,5 @@
 from ytmb.ui import Actor, Action
-import ytmb.utils as utils
+from ytmb.utils import is_ok_filename
 import ytmb.authentication as auth
 
 
@@ -7,7 +7,7 @@ def sign_in():
     prompt = "Name the user: "
     while True:
         username = input(prompt)
-        if not utils.is_ok_filename(username):
+        if not is_ok_filename(username):
             print("Please come up with a name using only letters, numbers, "
                   "underscores, and dashes.")
             continue

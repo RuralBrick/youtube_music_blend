@@ -4,14 +4,12 @@ import codecs
 
 from ytmb.ui import create_name_selector, create_playlist_selector
 import ytmb.playlists as pl
-import ytmb.utils as utils
+from ytmb.utils import get_config, get_data_directory
 from ytmb.exploration import Playlist
 
 
 def get_audits_directory(name: str, playlist: Playlist) -> Path:
-    p_all_audits = utils.get_data_directory(
-        utils.get_config()['tracking']['audits_path']
-    )
+    p_all_audits = get_data_directory(get_config()['tracking']['audits_path'])
     p_audits = p_all_audits / name / playlist['title']
     if not p_audits.is_dir():
         p_audits.mkdir(parents=True)

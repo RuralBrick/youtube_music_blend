@@ -1,8 +1,9 @@
 import logging
 import argparse
-from typing import NamedTuple
+from typing import NamedTuple, Optional
 from pathlib import Path
 
+from ytmb.utils import global_settings
 from ytmb.ui import Actor, Action
 from ytmb.menus.users import users_menu
 from ytmb.menus.blend import blend_flow
@@ -12,11 +13,15 @@ from ytmb.menus.tracking import tracking_flow
 
 
 class ArgNamespace(NamedTuple):
+    routine: Optional[str]
     verbose: int
     log: Path
+    debug: bool
 
 def parse_args() -> ArgNamespace:
     parser = argparse.ArgumentParser()
+
+    parser.add_argument('routine', nargs='?')
 
     verbosity = parser.add_mutually_exclusive_group()
     verbosity.add_argument(
@@ -40,6 +45,8 @@ def parse_args() -> ArgNamespace:
         default=Path(__file__).parent / 'debug.log'
     )
 
+    parser.add_argument('--debug', action='store_true')
+
     return parser.parse_args()
 
 def config_logs(args: ArgNamespace):
@@ -62,6 +69,7 @@ def config_logs(args: ArgNamespace):
 def main():
     args = parse_args()
     config_logs(args)
+    global_settings['debug'] = args.debug
 
     welcome = "Welcome to YouTube Music Blend!"
     print(welcome)
@@ -84,6 +92,8 @@ def main():
     except KeyboardInterrupt:
         print("\nSee you soon!")
     except BaseException as e:
+        if global_settings['debug']:
+            raise
         logging.critical(f"ytmb crashed:\n{repr(e)}")
 
 if __name__ == '__main__':
