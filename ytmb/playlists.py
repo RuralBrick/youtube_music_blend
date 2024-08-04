@@ -44,6 +44,19 @@ def get_playlists(name) -> list[Playlist]:
         logging.error(f"Could not get user playlists:\n{repr(e)}")
         return []
 
+def serialize_playlist(playlist: Playlist) -> str:
+    return playlist['playlistId']
+
+def deserialize_playlist(name, str_playlist) -> Playlist:
+    info = auth.get_client(name).get_playlist(str_playlist, limit=0)
+    playlist: Playlist = {
+        'title': info['title'],
+        'playlistId': info['id'] or str_playlist,
+        'thumbnails': info.get('thumbnails', []),
+        'description': info['description'],
+    }
+    return playlist
+
 def get_tracks(name, playlist) -> list[PlaylistItem]:
     try:
         return (auth.get_client(name)
@@ -54,17 +67,18 @@ def get_tracks(name, playlist) -> list[PlaylistItem]:
         return []
 
 def add_tracks(name, playlist, tracks):
-    videoIds = [t['videoId'] for t in tracks]
-    logging.debug(f"{videoIds=}")
-    resp = (
-        auth.get_client(name)
-            .add_playlist_items(
-                playlist['playlistId'],
-                videoIds=videoIds,
-                duplicates=True,
-            )
-    )
-    logging.debug(f"{resp=}")
+    if tracks:
+        videoIds = [t['videoId'] for t in tracks]
+        logging.debug(f"{videoIds=}")
+        resp = (
+            auth.get_client(name)
+                .add_playlist_items(
+                    playlist['playlistId'],
+                    videoIds=videoIds,
+                    duplicates=True,
+                )
+        )
+        logging.debug(f"{resp=}")
 
 def remove_tracks(name, playlist, tracks):
     if tracks:

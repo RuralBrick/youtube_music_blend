@@ -4,7 +4,7 @@ from typing import Any
 from dataclasses import dataclass
 from itertools import islice
 
-from ytmb.utils import get_config
+from ytmb.utils import global_settings, get_config
 import ytmb.authentication as auth
 from ytmb.playlists import get_playlists
 
@@ -244,6 +244,8 @@ class Actor:
             except StopIteration:
                 return
             except Exception as e:
+                if global_settings['debug']:
+                    raise
                 logging.error(f"Could not complete action:\n{repr(e)}")
 
 def create_name_selector() -> Selector:
