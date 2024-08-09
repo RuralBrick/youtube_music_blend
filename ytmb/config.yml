@@ -3,7 +3,7 @@ ui:
 authentication:
   header_path: headers
 blend:
-  default_length: 50
+  default_length: 60
   filtering:
     blacklist_path: blacklists
     whitelist_path: whitelists
