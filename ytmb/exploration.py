@@ -176,7 +176,11 @@ class HomeSampler:
                     track['title']
                 )
                 return track
-            case {'browseId': _, 'year': _}:
+            case (
+                {'browseId': _, 'year': _}
+                | {'browseId': _, 'type': 'Album'}
+                | {'browseId': _, 'type': 'Single'}
+            ):
                 album = get_album_tracks(self.name, listing)
                 msg = f"Found {len(album)} tracks in album {listing['title']}"
                 logging.debug(msg)
