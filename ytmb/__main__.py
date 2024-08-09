@@ -1,6 +1,7 @@
 import logging
 import sys
 import argparse
+from enum import Enum, auto
 from typing import NamedTuple, Optional
 from pathlib import Path
 
@@ -14,6 +15,11 @@ from ytmb.menus.compilation import compilation_flow
 from ytmb.menus.tracking import tracking_flow
 from ytmb.menus.routines import routines_menu
 
+
+DEFAULT_LOG_PATH = Path(__file__).parent / 'debug.log'
+
+class LogOptions(Enum):
+    SHOW_LOG = auto()
 
 class ArgNamespace(NamedTuple):
     routine: Optional[str]
@@ -44,13 +50,18 @@ def parse_args() -> ArgNamespace:
 
     parser.add_argument(
         '--log',
+        nargs='?',
         type=Path,
-        default=Path(__file__).parent / 'debug.log'
+        const=LogOptions.SHOW_LOG,
+        default=DEFAULT_LOG_PATH,
     )
 
     parser.add_argument('--debug', action='store_true')
 
     return parser.parse_args()
+
+def show_logs():
+    print(DEFAULT_LOG_PATH.resolve())
 
 def config_logs(args: ArgNamespace):
     verbosity_logs = logging.StreamHandler()
@@ -99,6 +110,12 @@ def interactive_mode():
 
 def main():
     args = parse_args()
+
+    match args.log:
+        case LogOptions.SHOW_LOG:
+            show_logs()
+            return
+
     config_logs(args)
     global_settings['debug'] = args.debug
 
