@@ -1,7 +1,7 @@
 import logging
 from typing import NotRequired, Optional
 from collections.abc import Iterable
-from enum import Enum, auto
+from enum import Enum
 import random
 from itertools import zip_longest, chain
 
@@ -23,19 +23,19 @@ class PlaylistItem(Track):
     feedbackTokens: NotRequired[dict]
 
 class SampleLimit(Enum):
-    ALL = auto()
-    SHORTEST_PLAYLIST = auto()
+    ALL = 'all'
+    SHORTEST_PLAYLIST = 'shortest_playlist'
 
 type SampleSize = SampleLimit | int
 
 class SampleMethod(Enum):
-    RANDOM = auto()
-    IN_ORDER = auto()
+    RANDOM = 'random'
+    IN_ORDER = 'in_order'
 
 class CombinationMethod(Enum):
-    INTERLEAVED = auto()
-    CONCATENATED = auto()
-    SHUFFLED = auto()
+    INTERLEAVED = 'interleaved'
+    CONCATENATED = 'concatenated'
+    SHUFFLED = 'shuffled'
 
 def get_playlists(name) -> list[Playlist]:
     try:

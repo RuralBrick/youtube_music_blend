@@ -12,6 +12,7 @@ from ytmb.menus.users import users_menu
 from ytmb.menus.blend import blend_flow
 from ytmb.menus.mixtape import mixtape_flow
 from ytmb.menus.compilation import compilation_flow
+from ytmb.menus.advanced import advanced_flow
 from ytmb.menus.tracking import tracking_flow
 from ytmb.menus.routines import routines_menu
 
@@ -97,7 +98,7 @@ def interactive_mode():
             '2': Action(blend_flow, "Create Blend"),
             '3': Action(mixtape_flow, "Create Mixtape"),
             '4': Action(compilation_flow, "Create Compilation"),
-            # 'a': Action(, "Advanced Playlist Creation"),
+            'a': Action(advanced_flow, "Advanced Playlist Creation"),
             't': Action(tracking_flow, "Track Playlist"),
             'r': Action(routines_menu, "Routines"),
         },

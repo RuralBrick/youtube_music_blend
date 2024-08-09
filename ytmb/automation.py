@@ -6,6 +6,7 @@ from ytmb.utils import get_config, get_data_path
 from ytmb.menus.blend import blend_args, process_blend
 from ytmb.menus.mixtape import mixtape_args, process_mixtape
 from ytmb.menus.compilation import compilation_args, process_compilation
+from ytmb.menus.advanced import advanced_args, process_advanced
 from ytmb.menus.tracking import tracking_args, process_tracking
 
 
@@ -18,6 +19,7 @@ AUTOMATABLES = {
     'Automated Blend': Automatable(blend_args, process_blend),
     'Automated Mixtape': Automatable(mixtape_args, process_mixtape),
     'Automated Compilation': Automatable(compilation_args, process_compilation),
+    'Automated Advanced Playlist Creation': Automatable(advanced_args, process_advanced),
     'Automated Tracking': Automatable(tracking_args, process_tracking),
 }
 
