@@ -38,13 +38,18 @@ class Config(TypedDict):
     tracking: TrackingConfig
     automation: AutomationConfig
 
+def get_app_root_path() -> Path:
+    return Path(__file__).parent
+
+def get_config_path() -> Path:
+    return get_app_root_path() / 'config.yml'
+
 def get_config() -> Config:
-    p_root = Path(__file__).parent
-    p_config = p_root / 'config.yml'
+    p_config = get_config_path()
     with open(p_config) as f:
         dict_config = yaml.safe_load(f)
     if 'data_path' not in dict_config:
-        dict_config['data_path'] = f'{p_root}/data'
+        dict_config['data_path'] = f'{get_app_root_path()}/data'
     return dict_config
 
 def get_data_path() -> Path:

@@ -5,7 +5,7 @@ from enum import Enum, auto
 from typing import NamedTuple, Optional
 from pathlib import Path
 
-from ytmb.utils import global_settings
+from ytmb.utils import global_settings, get_config_path
 from ytmb.automation import get_routines, AUTOMATABLES
 from ytmb.ui import Actor, Action
 from ytmb.menus.users import users_menu
@@ -23,14 +23,17 @@ class LogOptions(Enum):
 
 class ArgNamespace(NamedTuple):
     routine: Optional[str]
+    config: bool
     verbose: int
-    log: Path
+    log: Path | LogOptions
     debug: bool
 
 def parse_args() -> ArgNamespace:
     parser = argparse.ArgumentParser()
 
     parser.add_argument('routine', nargs='?')
+
+    parser.add_argument('--config', action='store_true')
 
     verbosity = parser.add_mutually_exclusive_group()
     verbosity.add_argument(
@@ -59,6 +62,9 @@ def parse_args() -> ArgNamespace:
     parser.add_argument('--debug', action='store_true')
 
     return parser.parse_args()
+
+def show_config():
+    print(get_config_path().resolve())
 
 def show_logs():
     print(DEFAULT_LOG_PATH.resolve())
@@ -94,7 +100,6 @@ def interactive_mode():
             # 'a': Action(, "Advanced Playlist Creation"),
             't': Action(tracking_flow, "Track Playlist"),
             'r': Action(routines_menu, "Routines"),
-            # 's': Action(, "Settings"),
         },
         return_key='q',
         return_desc="Quit script",
@@ -110,6 +115,10 @@ def interactive_mode():
 
 def main():
     args = parse_args()
+
+    if args.config:
+        show_config()
+        return
 
     match args.log:
         case LogOptions.SHOW_LOG:
