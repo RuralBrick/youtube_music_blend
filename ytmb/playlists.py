@@ -22,6 +22,11 @@ class PlaylistItem(Track):
     setVideoId: str
     feedbackTokens: NotRequired[dict]
 
+class PrivacyStatus(StrEnum):
+    PUBLIC = 'PUBLIC'
+    UNLISTED = 'UNLISTED'
+    PRIVATE = 'PRIVATE'
+
 class SampleLimit(StrEnum):
     ALL = 'all'
     SHORTEST_PLAYLIST = 'shortest_playlist'
@@ -56,6 +61,21 @@ def deserialize_playlist(name, str_playlist) -> Playlist:
         'description': info['description'],
     }
     return playlist
+
+def create_playlist(
+        name,
+        title,
+        description,
+        privacy_status: PrivacyStatus | str=PrivacyStatus.PRIVATE,
+) -> Optional[Playlist]:
+    privacy_status = PrivacyStatus(privacy_status)
+    resp = (auth.get_client(name)
+                .create_playlist(title, description, privacy_status.value))
+    logging.debug(f"{resp=}")
+    if isinstance(resp, str):
+        return deserialize_playlist(name, resp)
+    logging.error("Failed to create playlist.")
+    return None
 
 def get_tracks(name, playlist) -> list[PlaylistItem]:
     try:

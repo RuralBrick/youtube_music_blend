@@ -1,6 +1,10 @@
 from typing import TypedDict
 
-from ytmb.ui import create_name_selector, create_playlist_selector
+from ytmb.ui import (
+    create_name_selector,
+    create_playlist_selector,
+    get_create_playlist_kwargs,
+)
 import ytmb.playlists as pl
 
 
@@ -26,8 +30,18 @@ def mixtape_args() -> MixtapeParameters:
             break
     print("Choosing target playlist.")
     name = name_selector.user_choose()
-    playlist_selector = create_playlist_selector(name)
-    target_playlist = playlist_selector.user_choose()
+    target_playlist = None
+    prompt = "Create new playlist? (y/n) "
+    while (create_new := input(prompt)) not in {'y', 'n'}:
+        print("Please enter 'y' or 'n'.")
+    if create_new == 'y':
+        kwargs = get_create_playlist_kwargs(name)
+        target_playlist = pl.create_playlist(**kwargs)
+        if not target_playlist:
+            print("Please choose a preexisting playlist instead.")
+    if not target_playlist:
+        playlist_selector = create_playlist_selector(name)
+        target_playlist = playlist_selector.user_choose()
     print(f"Target playlist: {target_playlist['title']}")
 
     args: MixtapeParameters = {
