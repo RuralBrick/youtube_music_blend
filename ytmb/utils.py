@@ -22,6 +22,7 @@ class FilteringConfig(TypedDict):
 
 class BlendConfig(TypedDict):
     default_length: int
+    ask_for_length: bool
     filtering: FilteringConfig
 
 class TrackingConfig(TypedDict):
@@ -51,6 +52,11 @@ def get_config() -> Config:
     if 'data_path' not in dict_config:
         dict_config['data_path'] = f'{get_app_root_path()}/data'
     return dict_config
+
+def write_config(config: Config):
+    p_config = get_config_path()
+    with open(p_config, 'w') as f:
+        yaml.safe_dump(config, f, indent=2, sort_keys=False)
 
 def get_data_path() -> Path:
     return Path(get_config()['data_path'])
