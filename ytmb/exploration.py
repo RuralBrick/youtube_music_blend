@@ -176,11 +176,7 @@ class HomeSampler:
                     track['title']
                 )
                 return track
-            case (
-                {'browseId': _, 'year': _}
-                | {'browseId': _, 'type': 'Album'}
-                | {'browseId': _, 'type': 'Single'}
-            ):
+            case {'type': _}:
                 album = get_album_tracks(self.name, listing)
                 msg = f"Found {len(album)} tracks in album {listing['title']}"
                 logging.debug(msg)
@@ -192,7 +188,7 @@ class HomeSampler:
                     track['title']
                 )
                 return track
-            case {'browseId': _, 'subscribers': _}:
+            case {'subscribers': _}:
                 artist = get_artist_tracks(self.name, listing)
                 msg = f"Found {len(artist)} tracks by artist {listing['title']}"
                 logging.debug(msg)
