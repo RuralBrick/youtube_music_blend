@@ -176,7 +176,7 @@ class HomeSampler:
                     track['title']
                 )
                 return track
-            case {'browseId': _, 'year': _}:
+            case {'type': _}:
                 album = get_album_tracks(self.name, listing)
                 msg = f"Found {len(album)} tracks in album {listing['title']}"
                 logging.debug(msg)
@@ -188,7 +188,7 @@ class HomeSampler:
                     track['title']
                 )
                 return track
-            case {'browseId': _, 'subscribers': _}:
+            case {'subscribers': _}:
                 artist = get_artist_tracks(self.name, listing)
                 msg = f"Found {len(artist)} tracks by artist {listing['title']}"
                 logging.debug(msg)
@@ -234,8 +234,12 @@ def sample_home(name, k) -> list[Track]:
     logging.info(f"{name}'s selections:\n{sampler.format_selections()}")
     return tracks
 
-def create_blend(name, source_names, target_playlist):
-    blend_length = get_config()['blend']['default_length']
+def create_blend(
+        name,
+        source_names,
+        target_playlist,
+        blend_length=get_config()['blend']['default_length'],
+):
     num_per_user, padding = divmod(blend_length, len(source_names))
     logging.debug(
         f"Creating blend with {num_per_user} tracks per user and {padding} "

@@ -1,6 +1,10 @@
 from typing import TypedDict
 
-from ytmb.ui import create_name_selector, create_playlist_selector
+from ytmb.ui import (
+    create_name_selector,
+    create_playlist_selector,
+    get_create_playlist_kwargs,
+)
 import ytmb.playlists as pl
 
 
@@ -10,6 +14,7 @@ class MixtapeParameters(TypedDict):
     target_playlist: str
 
 def mixtape_args() -> MixtapeParameters:
+    """throws ValueError"""
     name_selector = create_name_selector()
     source_playlists = []
     print("Adding source playlists.")
@@ -26,8 +31,24 @@ def mixtape_args() -> MixtapeParameters:
             break
     print("Choosing target playlist.")
     name = name_selector.user_choose()
-    playlist_selector = create_playlist_selector(name)
-    target_playlist = playlist_selector.user_choose()
+    target_playlist = None
+    prompt = "Create new playlist? (y/n) "
+    while (create_new := input(prompt)) not in {'y', 'n'}:
+        print("Please enter 'y' or 'n'.")
+    if create_new == 'y':
+        kwargs = get_create_playlist_kwargs(name)
+        target_playlist = pl.create_playlist(**kwargs)
+        if not target_playlist:
+            print("Please choose a preexisting playlist instead.")
+    if not target_playlist:
+        playlist_selector = create_playlist_selector(name)
+        target_playlist = playlist_selector.user_choose()
+    if len(pl.get_tracks(name, target_playlist)) > 0:
+        match input("Target playlist not empty. Continue? (y/[n]) "):
+            case 'y':
+                pass
+            case _:
+                raise ValueError("Non-empty target playlist")
     print(f"Target playlist: {target_playlist['title']}")
 
     args: MixtapeParameters = {
@@ -53,6 +74,10 @@ def process_mixtape(args: MixtapeParameters):
     )
 
 def mixtape_flow():
-    args = mixtape_args()
+    try:
+        args = mixtape_args()
+    except ValueError:
+        print("No mixtape created.")
+        return
     process_mixtape(args)
     print("Done.")

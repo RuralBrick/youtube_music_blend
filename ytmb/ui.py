@@ -6,7 +6,7 @@ from itertools import islice
 
 from ytmb.utils import global_settings, get_config
 import ytmb.authentication as auth
-from ytmb.playlists import get_playlists
+from ytmb.playlists import get_playlists, PrivacyStatus
 
 
 @dataclass
@@ -270,3 +270,22 @@ def create_playlist_selector(name) -> Selector:
         redo="Please choose a playlist by its number.",
     )
     return playlist_menu
+
+def get_create_playlist_kwargs(name) -> dict:
+    title = input("Title the playlist: ")
+    description = input("Add a description (can be left blank): ")
+    privacy_status = Selector(
+        {
+            str(i+1): Choice(s, s.value.title()) for i, s
+            in enumerate(PrivacyStatus)
+        },
+        prompt="Choose a privacy status: "
+    ).user_choose()
+
+    kwargs = {
+        'name': name,
+        'title': title,
+        'description': description,
+        'privacy_status': privacy_status,
+    }
+    return kwargs
