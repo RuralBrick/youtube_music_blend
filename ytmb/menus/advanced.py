@@ -27,6 +27,7 @@ class AdvancedParameters(TypedDict):
     write_method: str
 
 def advanced_args() -> AdvancedParameters:
+    """throws ValueError"""
     name_selector = create_name_selector()
     source_playlists = []
     print("Adding source playlists.")
@@ -55,6 +56,12 @@ def advanced_args() -> AdvancedParameters:
     if not target_playlist:
         playlist_selector = create_playlist_selector(name)
         target_playlist = playlist_selector.user_choose()
+    if len(pl.get_tracks(name, target_playlist)) > 0:
+        match input("Target playlist not empty. Continue? (y/[n]) "):
+            case 'y':
+                pass
+            case _:
+                raise ValueError("Non-empty target playlist")
     print(f"Target playlist: {target_playlist['title']}")
     sample_size_choices = {'1': Choice(None, "Number")} | {
         str(i+2): Choice(m.value, m.name.replace('_', ' ').title())
@@ -143,6 +150,10 @@ def process_advanced(args: AdvancedParameters):
                           "recognized. Target playlist not edited.")
 
 def advanced_flow():
-    args = advanced_args()
+    try:
+        args = advanced_args()
+    except ValueError:
+        print("Playlist creation stopped.")
+        return
     process_advanced(args)
     print("Done.")

@@ -15,6 +15,7 @@ class BlendParameters(TypedDict):
     target_playlist: str
 
 def blend_args() -> BlendParameters:
+    """throws ValueError"""
     name_selector = create_name_selector()
     source_users = []
     print("Adding source users.")
@@ -41,6 +42,12 @@ def blend_args() -> BlendParameters:
     if not target_playlist:
         playlist_selector = create_playlist_selector(name)
         target_playlist = playlist_selector.user_choose()
+    if len(pl.get_tracks(name, target_playlist)) > 0:
+        match input("Target playlist not empty. Continue? (y/[n]) "):
+            case 'y':
+                pass
+            case _:
+                raise ValueError("Non-empty target playlist")
     print(f"Target playlist: {target_playlist['title']}")
 
     args: BlendParameters = {
@@ -58,6 +65,10 @@ def process_blend(args: BlendParameters):
     )
 
 def blend_flow():
-    args = blend_args()
+    try:
+        args = blend_args()
+    except ValueError:
+        print("No blend created.")
+        return
     process_blend(args)
     print("Done.")

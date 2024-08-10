@@ -15,7 +15,11 @@ def create_routine():
     })
     prog, automatable = program_selector.user_choose()
 
-    args = automatable.parameterizer()
+    try:
+        args = automatable.parameterizer()
+    except ValueError:
+        print("Routine creation aborted.")
+        return
 
     while True:
         name = input("Name the routine: ")
