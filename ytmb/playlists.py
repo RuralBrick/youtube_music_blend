@@ -1,7 +1,7 @@
 import logging
 from typing import NotRequired, Optional
 from collections.abc import Iterable
-from enum import Enum
+from enum import StrEnum
 import random
 from itertools import zip_longest, chain
 
@@ -22,17 +22,17 @@ class PlaylistItem(Track):
     setVideoId: str
     feedbackTokens: NotRequired[dict]
 
-class SampleLimit(Enum):
+class SampleLimit(StrEnum):
     ALL = 'all'
     SHORTEST_PLAYLIST = 'shortest_playlist'
 
 type SampleSize = SampleLimit | int
 
-class SampleMethod(Enum):
+class SampleMethod(StrEnum):
     RANDOM = 'random'
     IN_ORDER = 'in_order'
 
-class CombinationMethod(Enum):
+class CombinationMethod(StrEnum):
     INTERLEAVED = 'interleaved'
     CONCATENATED = 'concatenated'
     SHUFFLED = 'shuffled'
