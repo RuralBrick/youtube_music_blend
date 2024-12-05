@@ -83,7 +83,7 @@ def get_blacklist(name) -> Optional[set]:
         return {l for l in f.read().split('\n') if l}
 
 def get_home(name) -> list[HomeSection]:
-    resp = auth.get_client(name).get_home(limit=float('inf'))
+    resp = auth.get_client(name).get_home(limit=None)
     logging.debug(f"Found {len(resp)} home sections for {name}")
     return resp
 

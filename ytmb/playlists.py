@@ -53,7 +53,7 @@ def serialize_playlist(playlist: Playlist) -> str:
     return playlist['playlistId']
 
 def deserialize_playlist(name, str_playlist) -> Playlist:
-    info = auth.get_client(name).get_playlist(str_playlist, limit=0)
+    info = auth.get_client(name).get_playlist(str_playlist, limit=None)
     playlist: Playlist = {
         'title': info['title'],
         'playlistId': info['id'] or str_playlist,
